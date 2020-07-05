@@ -1,0 +1,167 @@
+﻿
+@model ShoppingCart.Models.ModelClassForShopping
+
+@{
+    ViewBag.Title = "Home Page";
+}
+<style type="text/css">
+    #loadingDiv {
+        position: fixed;
+        top: 0px;
+        right: 0px;
+        width: 100%;
+        height: 100%;
+        background-color: #666;
+        background-image: url('../../Images/loading.gif');
+        background-repeat: no-repeat;
+        background-position: center;
+        z-index: 10000000;
+        opacity: 0.4;
+        filter: alpha(opacity=40); /* For IE8 and earlier */
+    }
+</style>
+<div class="jumbotron">
+    <h3>Shopping Cart</h3>
+
+</div>
+
+
+<div class="row">
+    <div class="col-md-2">
+        <p>Item</p>
+    </div>
+    <div class="col-md-2">
+        @Html.DropDownListFor(model => model.ShoppingItem.ItemName, ViewBag.ItemList as SelectList,
+       new { @class = "form-control", @id = "ddlItemOne" })
+    </div>
+    <div class="col-md-2">
+        <p>Item Count</p>
+    </div>
+    <div class="col-md-2">
+        @Html.DropDownList("ItemCount", new List<SelectListItem>
+          {
+            new SelectListItem{ Text="1", Value = "1" },
+            new SelectListItem{ Text="2", Value = "2" },
+            new SelectListItem{ Text="3", Value = "3" },
+            new SelectListItem{ Text="4", Value = "4" },
+            new SelectListItem{ Text="5", Value = "5" },
+            new SelectListItem{ Text="6", Value = "6" },
+            new SelectListItem{ Text="7", Value = "7" },
+            new SelectListItem{ Text="8", Value = "8" },
+            new SelectListItem{ Text="9", Value = "9" },
+            new SelectListItem{ Text="10", Value = "10" },
+        }, new { @class = "form-control", @id = "ddlItemCountOne" })
+    </div>
+    <div class="col-md-2">
+        <p>Item Cost: <label id="itemcost1"></label></p>
+    </div>
+
+</div>
+<div class="row">
+    <div class="col-md-2">
+        <p>Item</p>
+    </div>
+    <div class="col-md-2">
+        @Html.DropDownListFor(model => model.ShoppingItem.ItemName,
+       ViewBag.ItemList as SelectList, new { @class = "form-control", @id = "ddlItemTwo" })
+    </div>
+    <div class="col-md-2">
+        <p>Item Count</p>
+    </div>
+    <div class="col-md-2">
+        @Html.DropDownList("ItemCount", new List<SelectListItem>
+          {
+            new SelectListItem{ Text="1", Value = "1" },
+            new SelectListItem{ Text="2", Value = "2" },
+            new SelectListItem{ Text="3", Value = "3" },
+            new SelectListItem{ Text="4", Value = "4" },
+            new SelectListItem{ Text="5", Value = "5" },
+            new SelectListItem{ Text="6", Value = "6" },
+            new SelectListItem{ Text="7", Value = "7" },
+            new SelectListItem{ Text="8", Value = "8" },
+            new SelectListItem{ Text="9", Value = "9" },
+            new SelectListItem{ Text="10", Value = "10" },
+        }, new { @class = "form-control", @id = "ddlItemCountTwo" })
+    </div>
+    <div class="col-md-2">
+        <p>Item Cost: <label id="itemcost2"></label></p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <p>Promotion</p>
+    </div>
+    <div class="col-md-4">
+        @Html.DropDownListFor(model => model.PromotionItem.PromotionId, ViewBag.PromotionList as SelectList, new { @class = "form-control", @id = "ddlPromotion", @onchange = "CalculateCost()" })
+    </div>
+
+</div>
+<div class="row">
+    <div class="col-md-4">
+        Total Cost :
+    </div>
+    <div class="col-md-4">
+        <label id="lblTotalCost"></label>
+
+    </div>
+
+
+</div>
+<div id="loadingDiv" style="display:none">
+    <div>
+        <h7>Please wait...</h7>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function CalculateCost() {
+        $("#loadingDiv").css("display", "block");
+
+        var itemOneid = $("#ddlItemOne").val();
+        var itemOneCount = $("#ddlItemCountOne").val();
+        var itemTwoid = $("#ddlItemTwo").val();
+        var itemTwoCount = $("#ddlItemCountTwo").val();
+        var PromotionID = $("#ddlPromotion").val();
+
+        var Items = [
+            {
+                "Itemid": itemOneid,
+                "ItemIdCount": itemOneCount
+
+            },
+            {
+                "Itemid": itemTwoid,
+                "ItemIdCount": itemTwoCount
+
+            },
+            {
+                "PromoId": PromotionID
+            }
+
+
+        ];
+
+
+        $.ajax({
+            url: '/Home/CalculateShoppingCost',
+            type: 'GET',
+            async: false,
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            processData: false,
+            data: "jsonData=" + JSON.stringify(Items),
+            success: function (response) {
+                alert("Hello: " + response.Name + " .\nCurrent Date and Time: " + response.DateTime);
+            },
+            failure: function (response) {
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+        $("#loadingDiv").css("display", "none");
+    }
+
+</script>
